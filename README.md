@@ -1,31 +1,28 @@
 Yii2 Validators Collection
 ==========================
 ...
+ - PathValidator
+   ```
+       public function rules(){
+           return [
+              [['pathAttribute'],PathValidator::class,'strictDir'=>true],
+              [['pathAttribute'],PathValidator::class,'strictFile'=>true,'writeable'=>true],
+              [['pathAttribute'],PathValidator::class,'requiredBase'=>'@common/data','readable'=>true],
+           ];
+       }
+   ```
 
 Installation
 ------------
 
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
-
-Either run
+run
 
 ```
-composer require --prefer-dist insolita/yii2-validatorpack "*"
+composer require --prefer-dist "insolita/yii2-validatorpack:~0.0.1"
 ```
 
 or add
 
 ```
-"insolita/yii2-validatorpack": "*"
+"insolita/yii2-validatorpack": "~0.0.1"
 ```
-
-to the require section of your `composer.json` file.
-
-
-Usage
------
-
-Once the extension is installed, simply use it in your code by  :
-
-```php
-<?= \insolita\validators\AutoloadExample::widget(); ?>```
