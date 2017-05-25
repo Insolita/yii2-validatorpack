@@ -29,7 +29,7 @@ class PathValidatorTest extends Unit
     /**
      *
      */
-    public function testAll()
+    public function testRules()
     {
         $this->specify(
             'checkDefaults',
@@ -67,7 +67,7 @@ class PathValidatorTest extends Unit
             function () {
                 $dir = __DIR__;
                 $file = __FILE__;
-                $validator = new PathValidator(['requiredBase' => __DIR__.'/../']);
+                $validator = new PathValidator(['requiredBase' => __DIR__ . '/../']);
                 verify('dir|base@valid', $validator->validate($dir, $error))->true();
                 verify('file|base@valid', $validator->validate($file, $error))->true();
                 
@@ -147,12 +147,58 @@ class PathValidatorTest extends Unit
         $this->specify(
             'testAliases',
             function () {
-                DynamicModel::validateData(['dir' => '@wDir', 'file' => '@wFile'],
+                DynamicModel::validateData(
+                    ['dir' => '@wDir', 'file' => '@wFile'],
                     [
-                        [['dir','file'],PathValidator::class,'readable'=>true,'writeable'=>true]
-                    ]);
+                        [['dir', 'file'], PathValidator::class, 'readable' => true, 'writeable' => true],
+                    ]
+                );
             }
         );
+    }
+    
+    public function testNormalize()
+    {
+        $this->specify('defaults',function (){
+            $model = new DynamicModel(
+                [
+                    'd1' => '@wDir',
+                    'd2' => __DIR__ . '/../',
+                ]
+            );
+            $model->addRule(['d1','d2'], PathValidator::class);
+            $model->validate();
+            verify($model->d1)->notEquals('@wDir');
+            verify($model->d1)->equals(\Yii::getAlias('@wDir'));
+            verify($model->d2)->notEquals(__DIR__ . '/../');
+            verify($model->d2)->equals(FileHelper::normalizePath(__DIR__ . '/../'));
+        });
+        $this->specify('onlyAliases',function (){
+            $model = new DynamicModel(
+                [
+                    'd1' => '@wDir',
+                    'd2' => __DIR__ . '/../',
+                ]
+            );
+            $model->addRule(['d1','d2'], PathValidator::class,['normalize'=>false]);
+            $model->validate();
+            verify($model->d1)->notEquals('@wDir');
+            verify($model->d1)->equals(\Yii::getAlias('@wDir'));
+            verify($model->d2)->notEquals(FileHelper::normalizePath(__DIR__ . '/../'));
+            verify($model->d2)->equals(__DIR__ . '/../');
+        });
+        $this->specify('asIs',function (){
+            $model = new DynamicModel(
+                [
+                    'd1' => '@wDir',
+                    'd2' => __DIR__ . '/../',
+                ]
+            );
+            $model->validate();
+            $model->addRule(['d1','d2'], PathValidator::class,['normalize'=>false,'aliasReplace'=>false]);
+            verify($model->d1)->equals('@wDir');
+            verify($model->d2)->equals(__DIR__ . '/../');
+        });
     }
     
     /**
