@@ -147,12 +147,13 @@ class PathValidatorTest extends Unit
         $this->specify(
             'testAliases',
             function () {
-                DynamicModel::validateData(
+                $model = DynamicModel::validateData(
                     ['dir' => '@wDir', 'file' => '@wFile'],
                     [
                         [['dir', 'file'], PathValidator::class, 'readable' => true, 'writeable' => true],
                     ]
                 );
+                verify($model->hasErrors())->false();
             }
         );
     }
@@ -225,19 +226,6 @@ class PathValidatorTest extends Unit
         \Yii::setAlias('@wFile', __DIR__ . '/chmods/wFile.txt');
         \Yii::setAlias('@rFile', __DIR__ . '/chmods/rFile.txt');
         \Yii::setAlias('@uFile', '/root/messages');
-        
-        $this->testModel = new DynamicModel(
-            [
-                'aliasedDir'    => '@testDir',
-                'aliasedFile'   => '@testFile',
-                'dir'           => __DIR__,
-                'file'          => __FILE__,
-                'empty'         => '',
-                'notFile'       => 1234567,
-                'unexistedDir'  => __DIR__ . '/../qwertyuiop/',
-                'unexistedFile' => __DIR__ . '/qwertyuiop.jpg',
-            ]
-        );
     }
     
     /**
