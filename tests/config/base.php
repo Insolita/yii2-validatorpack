@@ -29,8 +29,8 @@ return [
         'singletons'=>[]
     ],
     'components' => [
-        'db'=>$mysql,
-        'pgdb'=>$pgsql,
+        //'db'=>$mysql,
+        //'pgdb'=>$pgsql,
     ],
     'modules'=>[
     ],
